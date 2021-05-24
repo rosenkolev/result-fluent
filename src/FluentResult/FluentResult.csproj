@@ -1,11 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Globals">
     <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Product>FluentResult</Product>
+    <PackageId>Result.Fluent</PackageId>
+    <Authors>Rosen Kolev</Authors>
+    <Description>A service result library that can map and validate in a fluent way</Description>
     <RepositoryUrl>https://github.com/rosenkolev/result-fluent</RepositoryUrl>
-    <PackageTags>api,result,fluent,fluent-result</PackageTags>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>api,result,fluent,fluent-result,api result</PackageTags>
+    <PackageProjectUrl>https://github.com/rosenkolev/result-fluent</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/rosenkolev/result-fluent/main/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <PropertyGroup Label="Code Analysis">
     <AnalysisLevel>latest</AnalysisLevel>
@@ -13,8 +18,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet Condition="'$(Configuration)'=='Debug'">..\tools\analizers.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)'=='Release'">..\tools\analizers.disable.ruleset</CodeAnalysisRuleSet>
-    <Copyright>MIT</Copyright>
-    <Authors>rosenkolev</Authors>
   </PropertyGroup>
   <ItemGroup Label="Projects and Files Reference">
     <AdditionalFiles Include="..\tools\stylecop.json" />

@@ -100,7 +100,7 @@ Task<Result<User>> UpdateUserAsync(int userId, string userName)
             async user =>
             {
                 user.UserName = userName;
-                var updatedUser = _userRepository.UpdateUserAsync(user);
+                var updatedUser = await _userRepository.UpdateUserAsync(user);
                 return updatedUser;
             })
         .ValidateAsync(
