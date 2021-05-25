@@ -7,10 +7,10 @@
 
 **This is a lightweight .NET library, that can be used for returning and validating Result without relaying on exceptions.**
 
-You can install [Result.Fluent with NuGet](https://www.nuget.org/packages/Result.Fluent/):
+You can install [ResultFluent with NuGet](https://www.nuget.org/packages/ResultFluent/):
 
 ```shell
-dotnet add package Result.Fluent
+dotnet add package ResultFluent
 ```
 
 ## Models
