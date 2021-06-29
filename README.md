@@ -3,6 +3,7 @@
 [![Nuget downloads](https://img.shields.io/nuget/v/resultfluent.svg)](https://www.nuget.org/packages/ResultFluent/)
 [![Nuget](https://img.shields.io/nuget/dt/resultfluent)](https://www.nuget.org/packages/ResultFluent/)
 [![Build status](https://github.com/rosenkolev/result-fluent/actions/workflows/github-actions.yml/badge.svg)](https://github.com/rosenkolev/result-fluent/actions/workflows/github-actions.yml)
+[![codecov](https://codecov.io/gh/rosenkolev/result-fluent/branch/main/graph/badge.svg?token=ANXME8CYJP)](https://codecov.io/gh/rosenkolev/result-fluent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/rosenkolev/result-fluent/blob/main/LICENSE)
 
 **This is a lightweight .NET library, that can be used for returning and validating Result without relaying on exceptions.**
