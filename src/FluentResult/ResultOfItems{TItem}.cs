@@ -8,6 +8,12 @@ namespace FluentResult
     public class ResultOfItems<TItem> : Result<IEnumerable<TItem>>
     {
         /// <summary>Initializes a new instance of the <see cref="ResultOfItems{TItem}"/> class.</summary>
+        public ResultOfItems()
+            : base()
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ResultOfItems{TItem}"/> class.</summary>
         public ResultOfItems(
             IEnumerable<TItem> items,
             ResultComplete status,
