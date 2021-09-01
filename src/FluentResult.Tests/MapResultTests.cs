@@ -44,7 +44,7 @@ namespace FluentResult.Tests
         }
 
         [TestMethod]
-        public async Task MapAsynAsync()
+        public async Task MapAsyncAsync()
         {
             var result = await Result
                 .Create(5)

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en-GB",
+  "overrides": [
+    {
+      "filename": "{*.cmd,*.cs,*.csproj}",
+      "language": "en-US"
+    },
+    {
+      "filename": "{.cspell.json,*.svg}",
+      "enabled": false
+    }
+  ],
+  "ignorePaths": [
+    ".gitattributes",
+    ".gitignore",
+    ".editorconfig",
+    "*.{png,jpg,pdf}",
+    "**/*.ruleset",
+    "**/bin/**",
+    "**/obj/**",
+    "**/TestResults/**",
+    "**/launchSettings.json"
+  ],
+  "words": [
+    "msbuild",
+    "analyzer",
+    "analizers",
+    "ruleset",
+    "netcoreapp",
+    "netstandard",
+    "stylecop",
+    "sonarlint",
+    "nuget",
+    "nupkg",
+    "snupkg",
+    "menees",
+    "codecov",
+    "LINQ",
+    "NOLOGO",
+	
+	"Rosen",
+	"Kolev"
+  ]
+}

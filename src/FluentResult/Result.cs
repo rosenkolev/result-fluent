@@ -55,7 +55,7 @@ namespace FluentResult
             Create(converter(entity.Data)) :
             new Result<TModel>(default, entity.Status, entity.Messages);
 
-        /// <summary>Execute a asynchronius operation.</summary>
+        /// <summary>Execute a asynchronous operation.</summary>
         /// <typeparam name="TResult">The result type.</typeparam>
         /// <typeparam name="TSource">The source type.</typeparam>
         [DebuggerStepThrough]

@@ -126,12 +126,12 @@ Task<Result<User>> UpdateUserAsync(int userId, string userName)
 await UpdateUserAsync(10, "");
 // Status=InvalidArgument, Messages=["User name is required"], Data=null
 
-await UpdateUserAsync(100, "Jhon");
+await UpdateUserAsync(100, "Rosen");
 // One of the following:
 //
 // Status=NotFound, Messages=["User doesn't exists"], Data=null
 // Status=OperationFailed, Messages=["User was not updated"], Data=null
-// Status=Success, Messages=null, Data={ UserId=100, UserName="Jhon" }
+// Status=Success, Messages=null, Data={ UserId=100, UserName="Rosen" }
 ```
 
 ## Switch Mapping
