@@ -41,6 +41,7 @@
     "NOLOGO",
 	
 	"Rosen",
-	"Kolev"
+	"Kolev",
+	"Newtonsoft"
   ]
 }

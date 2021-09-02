@@ -197,8 +197,8 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
 ## Deserialize the as Result<TResult>
 
 In order to deserialize it we need to add `JsonConstructorAttribute`, because all properties are with private set.
-For this to happen we need to ise System.Test.Json or Newtonsoft.Json.
-This library do not include it because we do not want to depend on specific serialization. It can be achieved by inhering the class like:
+For this to happen we need to use System.Test.Json or Newtonsoft.Json.
+This library do not include it, because we do not want to depend on specific serialization. It can be achieved by inhering the class like:
 
 ```csharp
 // my /Result{TResult}.cs

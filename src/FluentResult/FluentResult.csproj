@@ -11,13 +11,12 @@
     <PackageTags>api,result,fluent,fluent-result,api result</PackageTags>
     <PackageProjectUrl>https://github.com/rosenkolev/result-fluent</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>result-icon-128.png</PackageIcon>
     <Copyright>Copyright 2021 (c) Rosen Kolev</Copyright>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <PropertyGroup Label="Code Analysis">
     <AnalysisLevel>latest</AnalysisLevel>
@@ -29,7 +28,7 @@
   <ItemGroup Label="Projects and Files Reference">
     <AdditionalFiles Include="..\tools\stylecop.json" />
     <None Include="..\..\resources\icons\result-icon-128.png" Pack="true" PackagePath="" />
-	<None Include="..\..\README.md" Pack="true" PackagePath="" />
+	  <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup Label="Code Analyzers">
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.*" PrivateAssets="All" />
