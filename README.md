@@ -88,6 +88,16 @@ Result<bool> validateResult =
 //  Messages = string[] { "User identifier must be positive number", "User name is required" }
 ```
 
+Validate can skip rules on fail
+
+```
+Result<bool> validateResult =
+    Result
+        .Create(userModel)
+        .Validate(user => user != null, ResultComplete.InvalidArgument, "User model is null")
+        .Validate(user => user.UserId > 0, ResultComplete.InvalidArgument, "User identifier is required", skipOnInvalidResult: true);
+```
+
 Chain validation and mapping
 
 ```csharp
@@ -151,7 +161,6 @@ Result<int> AddAndDouble(int a, int b) =>
 AddAndDouble(2, 3) // Data = "The result is 10"
 ```
 
-
 ## ResultOfItems
 
 The result of items is a result that contain metadata for a collection of items.
@@ -183,4 +192,41 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
             isValid => _itemsRepository.GetByPageAsync(pageIndex, pageSize))
         .ToResultOfItemsAsync(
             data => Result.CreateResultOfItems(data.Items, data.TotalCount, pageSize, pageIndex));
+```
+
+## Deserialize the as Result<TResult>
+
+In order to deserialize it we need to add `JsonConstructorAttribute`, because all properties are with private set.
+For this to happen we need to ise System.Test.Json or Newtonsoft.Json.
+This library do not include it because we do not want to depend on specific serialization. It can be achieved by inhering the class like:
+
+```csharp
+// my /Result{TResult}.cs
+using Newtonsoft.Json;
+// ...
+
+public class Result<TResult> : FluentResult.Result<TResult>
+{
+    [JsonConstructor]
+    public Result(TResult data, FluentResult.ResultComplete status, ICollection<string> messages)
+        : base(data, status, messages)
+    {
+    }
+}
+```
+
+or
+
+```csharp
+using System.Text.Json.Serialization;
+// ...
+
+public class Result<TResult> : FluentResult.Result<TResult>
+{
+    [JsonConstructor]
+    public Result(TResult data, FluentResult.ResultComplete status, ICollection<string> messages)
+        : base(data, status, messages)
+    {
+    }
+}
 ```

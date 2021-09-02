@@ -96,5 +96,35 @@ namespace FluentResult.Tests
             Assert.IsTrue(res.IsSuccessfulStatus());
             Assert.IsNull(res.Messages);
         }
+
+        [TestMethod]
+        public void ValidateWithSkipOnFailWorks()
+        {
+            var res = Result
+                .Validate(false, ResultComplete.InvalidArgument, "V1")
+                .Validate(0 == 1, ResultComplete.InvalidArgument, "V2", skipOnInvalidResult: true)
+                .Validate(_ => 1 == 2, ResultComplete.InvalidArgument, "V3", skipOnInvalidResult: true)
+                .Validate(_ => 1 == 2, ResultComplete.InvalidArgument, "V4", skipOnInvalidResult: false);
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.IsTrue(res.Messages.Contains("V1"), "V1 apply");
+            Assert.IsTrue(res.Messages.Contains("V4"), "V4 apply");
+        }
+
+        [TestMethod]
+        public async Task ValidateWithSkipOnFailAsyncWorks()
+        {
+            var res = await Result.Create(2)
+                .MapAsync(m => Task.FromResult(m))
+                .ValidateAsync(m => m == 1, ResultComplete.InvalidArgument, "V1", skipOnInvalidResult: true)
+                .ValidateAsync(m => m == 1, ResultComplete.InvalidArgument, "V2", skipOnInvalidResult: true)
+                .ValidateAsync(m => m == 1, ResultComplete.InvalidArgument, "V3", skipOnInvalidResult: false);
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.IsTrue(res.Messages.Contains("V1"), "V1 apply");
+            Assert.IsTrue(res.Messages.Contains("V3"), "V3 apply");
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Globals">
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Product>FluentResult</Product>
     <PackageId>ResultFluent</PackageId>
     <Authors>Rosen Kolev</Authors>

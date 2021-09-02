@@ -113,16 +113,53 @@ namespace FluentResult
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
-        public static Result<TResult> Validate<TResult>(this Result<TResult> result, bool condition, ResultComplete status, string message) =>
-            condition
-                ? result
-                : new Result<TResult>(default, status, CombineArray(result?.Messages, message));
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            string message,
+            bool skipOnInvalidResult) =>
+            (skipOnInvalidResult && !result.IsSuccessfulStatus()) || (predicate?.Invoke(result.Data) ?? false)
+            ? result
+            : CreateResultWithError<TResult>(status, CombineArray(result.Messages, message));
 
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
-        public static Result<TResult> Validate<TResult>(this Result<TResult> result, Predicate<TResult> predicate, ResultComplete status, string message) =>
-            Validate(result, predicate?.Invoke(result.Data) ?? false, status, message);
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            bool condition,
+            ResultComplete status,
+            string message,
+            bool skipOnInvalidResult) =>
+            Validate(result, _ => condition, status, message, skipOnInvalidResult);
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TResult> Validate<TResult>(this Result<TResult> result, bool condition, ResultComplete status, string message) =>
+            Validate(result, condition, status, message, skipOnInvalidResult: false);
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            string message) =>
+            Validate(result, predicate, status, message, skipOnInvalidResult: false);
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Task<Result<TResult>> entityTask,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            string message,
+            bool skipOnInvalidResult) =>
+            Validate(await entityTask, predicate, status, message, skipOnInvalidResult);
 
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -132,7 +169,7 @@ namespace FluentResult
             Predicate<TResult> predicate,
             ResultComplete status,
             string message) =>
-            Validate(await entityTask, predicate, status, message);
+            Validate(await entityTask, predicate, status, message, skipOnInvalidResult: false);
 
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -144,7 +181,7 @@ namespace FluentResult
             string message)
         {
             var result = await entityTask;
-            return Validate(result, await predicateAsync?.Invoke(result.Data), status, message);
+            return Validate(result, await predicateAsync?.Invoke(result.Data), status, message, skipOnInvalidResult: false);
         }
 
         /// <summary>Create a successful result of items.</summary>
