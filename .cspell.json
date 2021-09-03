@@ -37,11 +37,12 @@
     "snupkg",
     "menees",
     "codecov",
+    "codeql",
     "LINQ",
     "NOLOGO",
-	
-	"Rosen",
-	"Kolev",
-	"Newtonsoft"
+
+    "Rosen",
+    "Kolev",
+    "Newtonsoft"
   ]
 }
