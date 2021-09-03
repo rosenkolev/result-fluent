@@ -23,6 +23,17 @@ namespace FluentResult.Tests
         }
 
         [TestMethod]
+        public void CreateConstructorWithoutMetadata()
+        {
+            var models = new[] { TestModel.Generate(), TestModel.Generate() };
+            var res = new ResultOfItems<TestModel>(models, ResultComplete.Success, null);
+            Assert.AreEqual(models, res.Data);
+            Assert.AreEqual(ResultComplete.Success, res.Status);
+            Assert.IsNull(res.Messages);
+            Assert.IsNull(res.Metadata);
+        }
+
+        [TestMethod]
         public async Task MapItemsAsync()
         {
             var models = new[] { TestModel.Generate(), TestModel.Generate() };

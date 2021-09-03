@@ -105,6 +105,21 @@ namespace FluentResult
         public static Result<IReadOnlyList<TModel>> MapList<TEntity, TModel>(this Result<IEnumerable<TEntity>> entity, Func<TEntity, TModel> converter) =>
             entity.Map(it => MapItems(it, converter));
 
+        /// <summary>Handle exceptions in async call.</summary>
+        /// <typeparam name="TEntity">The entity object.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TEntity>> CatchAsync<TEntity>(this Task<Result<TEntity>> entityTask, Func<Exception, Result<TEntity>> onError)
+        {
+            try
+            {
+                return await entityTask;
+            }
+            catch (Exception ex)
+            {
+                return onError(ex);
+            }
+        }
+
         /// <summary>Validates the specified condition.</summary>
         [DebuggerStepThrough]
         public static Result<bool> Validate(bool condition, ResultComplete status, string message) =>

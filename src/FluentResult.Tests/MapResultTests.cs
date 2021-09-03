@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,6 +42,19 @@ namespace FluentResult.Tests
 
             Assert.AreEqual(6, result.Data[0]);
             Assert.AreEqual(10, result.Data[1]);
+        }
+
+        [TestMethod]
+        public void MapListEnumerable()
+        {
+            var models = Enumerable.Range(1, 3);
+            var result = Result
+                .Create(models)
+                .MapList(t => t * 2);
+
+            Assert.AreEqual(2, result.Data[0]);
+            Assert.AreEqual(4, result.Data[1]);
+            Assert.AreEqual(6, result.Data[2]);
         }
 
         [TestMethod]
@@ -94,6 +108,30 @@ namespace FluentResult.Tests
                 .SwitchAsync(secondFnAsync);
 
             Assert.AreEqual(21, result.Data);
+        }
+
+        [TestMethod]
+        public async Task CatchAsyncShouldCatchOnError()
+        {
+            var result = await Result
+                .Create(1)
+                .MapAsync(_ => Task.FromException<int>(new InvalidOperationException()))
+                .CatchAsync(ex => Result.Create(ex is InvalidOperationException ? 2 : 3))
+                .ValidateAsync(value => value == 2, ResultComplete.OperationFailed, string.Empty);
+
+            Assert.IsTrue(result.IsSuccessfulStatus());
+            Assert.AreEqual(2, result.Data);
+        }
+
+        [TestMethod]
+        public async Task CatchAsyncShouldBeSkippedWhenNoError()
+        {
+            var result = await Result
+                .Create(1)
+                .MapAsync(_ => Task.FromResult(5))
+                .CatchAsync(ex => Result.Create(ex is InvalidOperationException ? 2 : 3));
+
+            Assert.AreEqual(5, result.Data);
         }
     }
 }

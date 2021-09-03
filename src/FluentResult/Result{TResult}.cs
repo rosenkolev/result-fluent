@@ -7,12 +7,6 @@ namespace FluentResult
     public class Result<TResult>
     {
         /// <summary>Initializes a new instance of the <see cref="Result{TResult}"/> class.</summary>
-        public Result()
-            : this(default)
-        {
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="Result{TResult}"/> class.</summary>
         public Result(TResult data, ResultComplete status, ICollection<string> messages)
         {
             Data = data;
