@@ -3,6 +3,7 @@
 [![Nuget downloads](https://img.shields.io/nuget/v/resultfluent.svg)](https://www.nuget.org/packages/ResultFluent/)
 [![Nuget](https://img.shields.io/nuget/dt/resultfluent)](https://www.nuget.org/packages/ResultFluent/)
 [![build](https://github.com/rosenkolev/result-fluent/actions/workflows/github-actions.yml/badge.svg)](https://github.com/rosenkolev/result-fluent/actions/workflows/github-actions.yml)
+[![build mvc](https://github.com/rosenkolev/result-fluent/actions/workflows/github-build-mvc.yml/badge.svg)](https://github.com/rosenkolev/result-fluent/actions/workflows/github-build-mvc.yml)
 [![spell check](https://github.com/rosenkolev/result-fluent/actions/workflows/spell-check.yml/badge.svg)](https://github.com/rosenkolev/result-fluent/actions/workflows/spell-check.yml)
 [![codeql analyze](https://github.com/rosenkolev/result-fluent/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/rosenkolev/result-fluent/actions/workflows/codeql-analysis.yml)
 [![codecov](https://codecov.io/gh/rosenkolev/result-fluent/branch/main/graph/badge.svg?token=ANXME8CYJP)](https://codecov.io/gh/rosenkolev/result-fluent)

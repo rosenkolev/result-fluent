@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Globals">
     <TargetFrameworks>netcoreapp3.0;net47;net5.0</TargetFrameworks>
-    <Version>1.0.5-beta1</Version>
+    <Version>1.0.5</Version>
     <Product>FluentResult.Mvc</Product>
     <PackageId>ResultFluent.Mvc</PackageId>
     <Authors>Rosen Kolev</Authors>
