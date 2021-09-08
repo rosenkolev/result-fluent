@@ -14,5 +14,6 @@ jobs:
           languages: csharp
       - name: build c# app
         run: |
-          dotnet build src/FluentResult/FluentResult.csproj --nologo
+          dotnet build src/FluentResult/FluentResult.csproj --nologo -f net5.0
+          dotnet build src/FluentResult.Mvc/FluentResult.Mvc.csproj --nologo -f net5.0
       - uses: github/codeql-action/analyze@v1

@@ -1,0 +1,28 @@
+name: dotnet build mvc
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+    - name: Restore Packages
+      run: nuget restore src/DevOps.sln
+    - name: Build FluentResult.Mvc with symbols
+      run: |
+        msbuild.exe src/FluentResult.Mvc/FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:IncludeSymbols=true
+    - name: Clear nupkg for another package with readme
+      run: del src\FluentResult.Mvc\bin\Release\*.nupkg
+    - name: Build FluentResult.Mvc with readme
+      run: |
+        msbuild.exe src/FluentResult.Mvc/FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:PACK_README=true
+    - name: Publish the package to nuget.org
+      run: nuget push src/FluentResult/bin/Release/*.nupkg -SkipDuplicate -ApiKey $NUGET_AUTH_TOKEN -Source https://api.nuget.org/v3/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}

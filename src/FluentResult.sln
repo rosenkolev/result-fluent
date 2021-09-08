@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentResult", "FluentResult\FluentResult.csproj", "{8045833A-32A6-43F3-A530-B5F19069CA0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentResult", "FluentResult\FluentResult.csproj", "{8045833A-32A6-43F3-A530-B5F19069CA0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentResult.Tests", "FluentResult.Tests\FluentResult.Tests.csproj", "{FFB52A12-34DC-4B5F-92A6-2B17D6297584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentResult.Tests", "FluentResult.Tests\FluentResult.Tests.csproj", "{FFB52A12-34DC-4B5F-92A6-2B17D6297584}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentResult.Mvc", "FluentResult.Mvc\FluentResult.Mvc.csproj", "{2A59E1F2-C229-4A95-9720-D48E76D454A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FFB52A12-34DC-4B5F-92A6-2B17D6297584}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFB52A12-34DC-4B5F-92A6-2B17D6297584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFB52A12-34DC-4B5F-92A6-2B17D6297584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A59E1F2-C229-4A95-9720-D48E76D454A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A59E1F2-C229-4A95-9720-D48E76D454A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A59E1F2-C229-4A95-9720-D48E76D454A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A59E1F2-C229-4A95-9720-D48E76D454A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

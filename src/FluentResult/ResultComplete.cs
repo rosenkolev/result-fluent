@@ -14,5 +14,8 @@
 
         /// <summary>When the operation failed.</summary>
         OperationFailed,
+
+        /// <summary>When the operation is in conflict with another running operation.</summary>
+        Conflict,
     }
 }
