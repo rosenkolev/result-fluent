@@ -11,7 +11,9 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.2
+      uses: NuGet/setup-nuget@v1
+      with:
+        nuget-version: 'latest'
     - name: Restore Packages
       run: nuget restore src/DevOps.sln
     - name: Build FluentResult.Mvc with symbols
