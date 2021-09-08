@@ -13,6 +13,7 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1
       with:
+        nuget-api-key: ${{ secrets.NUGET_TOKEN }}
         nuget-version: 'latest'
     - name: Restore Packages
       run: nuget restore src\FluentResult.sln
@@ -25,6 +26,4 @@ jobs:
       run: |
         msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:PACK_README=true
     - name: Publish the package to nuget.org
-      run: nuget push src\FluentResult.Mvc\bin\Release\*.nupkg $NUGET_AUTH_TOKEN -src https://api.nuget.org/v3/index.json -SkipDuplicate
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: nuget push src\FluentResult.Mvc\bin\Release\*.nupkg -src https://api.nuget.org/v3/index.json -SkipDuplicate
