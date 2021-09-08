@@ -15,7 +15,7 @@ jobs:
       with:
         nuget-version: 'latest'
     - name: Restore Packages
-      run: nuget restore src\DevOps.sln
+      run: nuget restore src\FluentResult.sln
     - name: Build FluentResult.Mvc with symbols
       run: |
         msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:IncludeSymbols=true
