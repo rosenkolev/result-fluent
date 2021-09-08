@@ -25,6 +25,6 @@ jobs:
       run: |
         msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:PACK_README=true
     - name: Publish the package to nuget.org
-      run: nuget push src\FluentResult\bin\Release\*.nupkg -SkipDuplicate -ApiKey $NUGET_AUTH_TOKEN -Source https://api.nuget.org/v3/index.json
+      run: nuget push src\FluentResult\bin\Release\*.nupkg -src https://api.nuget.org/v3/index.json -SkipDuplicate -NonInteractive -ApiKey $NUGET_AUTH_TOKEN
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
