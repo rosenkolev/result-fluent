@@ -31,7 +31,7 @@ namespace FluentResult
             {
                 ResultComplete.Success => controller.Ok(result),
                 ResultComplete.NotFound => controller.NotFound(result),
-                ResultComplete.InvalidArgument => controller.BadRequest(result),
+                ResultComplete.InvalidArgument => controller.UnprocessableEntity(result),
                 ResultComplete.OperationFailed => controller.StatusCode(StatusCodes.Status500InternalServerError, result),
                 ResultComplete.Conflict => controller.Conflict(result),
                 _ => throw new NotSupportedException()

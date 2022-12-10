@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -48,7 +49,6 @@ namespace FluentResult.Tests
                 .Validate(valid => 3 == 2, ResultComplete.InvalidArgument, "3");
 
             Assert.IsFalse(res.IsSuccessfulStatus());
-            Assert.IsFalse(res.Data);
             Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
             Assert.AreEqual(2, res.Messages.Count);
             Assert.IsTrue(res.Messages.Contains("2"));
@@ -65,7 +65,7 @@ namespace FluentResult.Tests
                 .ValidateAsync(model => model.Id < 1, ResultComplete.InvalidArgument, "Id should be smaller than 1");
 
             Assert.IsFalse(res.IsSuccessfulStatus());
-            Assert.IsNull(res.Data);
+            Assert.AreEqual(model, res.Data);
             Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
             Assert.AreEqual(1, res.Messages.Count);
             Assert.IsTrue(res.Messages.Contains("Id should be smaller than 1"));
@@ -113,6 +113,14 @@ namespace FluentResult.Tests
         }
 
         [TestMethod]
+        public void Validate_PassOnDataWhenFail()
+        {
+            var res = Result.Create(3)
+                .Validate(_ => false, ResultComplete.InvalidArgument, "V1", skipOnInvalidResult: false);
+            Assert.AreEqual(3, res.Data);
+        }
+
+        [TestMethod]
         public async Task ValidateWithSkipOnFailAsyncWorks()
         {
             var res = await Result.Create(2)
@@ -125,6 +133,69 @@ namespace FluentResult.Tests
             Assert.AreEqual(2, res.Messages.Count);
             Assert.IsTrue(res.Messages.Contains("V1"), "V1 apply");
             Assert.IsTrue(res.Messages.Contains("V3"), "V3 apply");
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncPredicate_Success()
+        {
+            var res = await Result.Create(2)
+                .ValidateAsync(arg => Task.Run(() => true), ResultComplete.Conflict, "ERR");
+
+            Assert.AreEqual(2, res.Data);
+            Assert.IsTrue(res.IsSuccessfulStatus());
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncPredicate_Fail()
+        {
+            var res = await Result.Create(2)
+                .ValidateAsync(arg => Task.Run(() => false), ResultComplete.Conflict, "ERR");
+
+            Assert.AreEqual(2, res.Data);
+            Assert.AreEqual(ResultComplete.Conflict, res.Status);
+            Assert.AreEqual("ERR", res.Messages.First());
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncPredicate_SkipEval()
+        {
+            var evaluated = false;
+            var res = await Result
+                .Validate(false, ResultComplete.InvalidArgument, "A")
+                .ValidateAsync(
+                    _ =>
+                    {
+                        evaluated = true;
+                        return Task.FromResult(true);
+                    },
+                    ResultComplete.Conflict,
+                    "B",
+                    skipOnInvalidResult: true);
+
+            Assert.IsFalse(evaluated);
+            Assert.AreEqual(1, res.Messages.Count);
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncPredicate_Eval()
+        {
+            var evaluated = false;
+            var res = await Result
+                .Validate(false, ResultComplete.InvalidArgument, "A")
+                .ValidateAsync(
+                    _ =>
+                    {
+                        evaluated = true;
+                        return Task.FromResult(false);
+                    },
+                    ResultComplete.Conflict,
+                    "B",
+                    skipOnInvalidResult: false);
+
+            Assert.IsTrue(evaluated);
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual("A", res.Messages.First());
+            Assert.AreEqual("B", res.Messages.Last());
         }
     }
 }

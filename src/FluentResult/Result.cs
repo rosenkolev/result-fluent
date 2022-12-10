@@ -15,11 +15,24 @@ namespace FluentResult
         public static Result<TResult> Create<TResult>(TResult data) =>
             new Result<TResult>(data, ResultComplete.Success, null);
 
+        /// <summary>Create an Result from data.</summary>
+        /// <typeparam name="TResult">The type of the result data.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TResult> Create<TResult>(TResult data, string message) =>
+            new Result<TResult>(data, ResultComplete.Success, new [] { message });
+
         /// <summary>Create an Result with single object.</summary>
         /// <typeparam name="TResult">The type of the single result data.</typeparam>
         [DebuggerStepThrough]
         public static Result<TResult> CreateResultWithError<TResult>(ResultComplete status, params string[] messages) =>
             new Result<TResult>(default, status, messages);
+
+        /// <summary>Convert to another result.</summary>
+        /// <typeparam name="TIn">The input object.</typeparam>
+        /// <typeparam name="TOut">The output object.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TOut> To<TIn, TOut>(this Result<TIn> result, TOut defaultValue) =>
+            new Result<TOut>(defaultValue, result.Status, result.Messages);
 
         /// <summary>Switch the result to a new result.</summary>
         /// <typeparam name="TEntity">The entity object.</typeparam>
@@ -136,7 +149,7 @@ namespace FluentResult
             bool skipOnInvalidResult) =>
             (skipOnInvalidResult && !result.IsSuccessfulStatus()) || (predicate?.Invoke(result.Data) ?? false)
             ? result
-            : CreateResultWithError<TResult>(status, CombineArray(result.Messages, message));
+            : new Result<TResult>(result.Data, status, CombineArray(result.Messages, message));
 
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -152,7 +165,11 @@ namespace FluentResult
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
-        public static Result<TResult> Validate<TResult>(this Result<TResult> result, bool condition, ResultComplete status, string message) =>
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            bool condition,
+            ResultComplete status,
+            string message) =>
             Validate(result, condition, status, message, skipOnInvalidResult: false);
 
         /// <summary>Validates the specified condition.</summary>
@@ -186,6 +203,22 @@ namespace FluentResult
             string message) =>
             Validate(await entityTask, predicate, status, message, skipOnInvalidResult: false);
 
+        /// <summary>Validate a result asynchronius.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Result<TResult> result,
+            Func<TResult, Task<bool>> predicateAsync,
+            ResultComplete status,
+            string message,
+            bool skipOnInvalidResult = true) =>
+            Validate(
+                result,
+                !(!result.IsSuccessfulStatus() && skipOnInvalidResult) && await predicateAsync(result.Data),
+                status,
+                message,
+                skipOnInvalidResult);
+
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
@@ -208,24 +241,6 @@ namespace FluentResult
             int? pageSize = null,
             int? pageIndex = null) =>
             new ResultOfItems<TEntity>(items, ResultComplete.Success, null, totalCount, pageSize, pageIndex, items.Count);
-
-        /// <summary>Convert an result entity to result of items.</summary>
-        /// <typeparam name="TEntity">The entity object.</typeparam>
-        [DebuggerStepThrough]
-        public static async Task<ResultOfItems<TEntity>> ToResultOfItemsAsync<TEntity>(
-            this Result<IReadOnlyList<TEntity>> result,
-            Func<IReadOnlyList<TEntity>, Task<ResultOfItems<TEntity>>> converterAsync) =>
-            result.Status == ResultComplete.Success ?
-            await converterAsync?.Invoke(result.Data) :
-            new ResultOfItems<TEntity>(default, result.Status, result.Messages);
-
-        /// <summary>Convert an result entity to result of items.</summary>
-        /// <typeparam name="TEntity">The entity object.</typeparam>
-        [DebuggerStepThrough]
-        public static async Task<ResultOfItems<TEntity>> ToResultOfItemsAsync<TEntity>(
-            this Task<Result<IReadOnlyList<TEntity>>> resultAsync,
-            Func<IReadOnlyList<TEntity>, Task<ResultOfItems<TEntity>>> converterAsync) =>
-            await ToResultOfItemsAsync(await resultAsync, converterAsync);
 
         private static IReadOnlyList<TModel> MapItems<TEntity, TModel>(IEnumerable<TEntity> entities, Func<TEntity, TModel> converter) =>
             entities.Select(converter).ToList();

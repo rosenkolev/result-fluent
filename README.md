@@ -48,6 +48,9 @@ Result<Model> successResult = new Result<Model>(model); // Status = Success, Mes
 // or just
 Result<Model> successResult = Result.Create(model);
 
+// We can also add success messages
+Result<Model> successResult = Result.Create(model, "OK");
+
 // create a result which indicates error
 Result<Model> errorResult = new Result<Model>(model, ResultComplete.InvalidArgument, new [] { "Model identifier must be a positive number" });
 // or
@@ -207,6 +210,40 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
             isValid => _itemsRepository.GetByPageAsync(pageIndex, pageSize))
         .ToResultOfItemsAsync(
             data => Result.CreateResultOfItems(data.Items, data.TotalCount, pageSize, pageIndex));
+			
+// or simply
+ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) => 
+    Result
+        .Validate(pageIndex >= 0, ResultComplete.InvalidArgument, "Page index is invalid")
+        .Validate(pageSize > 0, ResultComplete.InvalidArgument, "Page size is invalid")
+        .MapAsync(_ => _itemsRepository.GetByPageAsync(pageIndex, pageSize))
+        .ToResultOfItemsAsync();
+```
+
+## Combine and CombineAsync
+```csharp
+// Sum is 9
+var sum = Result.Create(2).Combine(
+	number => (
+		Result.Create(3),
+		Result.Create(4)),
+	(a, b, c) => a + b + c);
+	
+// async example
+Task<Result<Classroom>> UpdateClassroomAsync(UpdateClassroomRequest request) =>
+    Result
+		.Validate(request != null, ResultComplete.InvalidArgument, "The request must not be null")
+	    .MapAsync(_ => _classroomRepository.GetByIdAsync(request.Id))
+		.CombineAsync(
+		    classroom => (
+			    _schoolRepository.GetByIdAsync(request.SchoolId),
+				_userRepository.GetByIdAsync(request.TeacherId)),
+			async (classroom, school, teacher) =>
+			{
+			    classroom.School = school;
+				classroom.Teacher = teacher;
+				await _classroomRepository.UpdateAsync(classroom);
+			});
 ```
 
 ## Deserialize the as Result<TResult>

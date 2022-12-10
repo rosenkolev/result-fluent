@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,6 +45,69 @@ namespace FluentResult.Tests
 
             Assert.AreEqual(2, result.Metadata.Count);
             Assert.AreEqual(10, result.Metadata.Total);
+        }
+
+
+        [TestMethod]
+        public void ToResultOfItems_Create()
+        {
+            var model = TestModel.Generate();
+            var result = Result.Create(new[] { model })
+                .ToResultOfItems(data => Result.CreateResultOfItems(data, 1));
+
+            Assert.AreEqual(model, result.Data.First());
+        }
+
+        [TestMethod]
+        public async Task ToResultOfItemsAsync_Create()
+        {
+            var model = TestModel.Generate();
+            var result = await Helper.Async(new[] { model })
+                .ToResultOfItemsAsync(data => Result.CreateResultOfItems(data, 1));
+
+            Assert.AreEqual(model, result.Data.First());
+        }
+
+        [TestMethod]
+        public async Task ToResultOfItemsAsync_CreateAsync()
+        {
+            var model = TestModel.Generate();
+            var result = await Helper.Async(new[] { model })
+                .ToResultOfItemsAsync(data =>
+                    Task.Run(() => Result.CreateResultOfItems(data, 1)));
+
+            Assert.AreEqual(model, result.Data.First());
+        }
+
+        [TestMethod]
+        public async Task ToResultOfItems_CreateAsync()
+        {
+            var model = TestModel.Generate();
+            var result = await Result.Create(new[] { model })
+                .ToResultOfItemsAsync(data =>
+                    Task.Run(() => Result.CreateResultOfItems(data, 1)));
+
+            Assert.AreEqual(model, result.Data.First());
+        }
+
+        [TestMethod]
+        public async Task ToResultOfItemsAsync_CreateNoMapCollection()
+        {
+            var model = TestModel.Generate();
+            var result = await Helper.Async<IReadOnlyCollection<TestModel>>(new[] { model })
+                .ToResultOfItemsAsync();
+
+            Assert.AreEqual(model, result.Data.First());
+        }
+
+        [TestMethod]
+        public async Task ToResultOfItemsAsync_CreateNoMapList()
+        {
+            var model = TestModel.Generate();
+            var result = await Helper.Async<IReadOnlyList<TestModel>>(new[] { model })
+                .ToResultOfItemsAsync();
+
+            Assert.AreEqual(model, result.Data.First());
         }
     }
 }

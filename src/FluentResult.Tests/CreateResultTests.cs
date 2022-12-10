@@ -1,3 +1,5 @@
+﻿using System.Linq;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FluentResult.Tests
@@ -52,6 +54,25 @@ namespace FluentResult.Tests
             Assert.IsNull(res.Data);
             Assert.AreEqual(ResultComplete.NotFound, res.Status);
             Assert.IsTrue(res.Messages.Contains("Model not found"));
+        }
+
+        [TestMethod]
+        public void ConvertResultToOtherData()
+        {
+            var result = new Result<int>(1, ResultComplete.OperationFailed, new [] { "ERR" });
+            var other = result.To("R");
+            Assert.AreEqual("R", other.Data);
+            Assert.AreEqual(ResultComplete.OperationFailed, other.Status);
+            Assert.AreEqual("ERR", other.Messages.First());
+        }
+
+        [TestMethod]
+        public void ConvertWithMessage()
+        {
+            var result = Result.Create(2, "TEST");
+            Assert.AreEqual(2, result.Data);
+            Assert.AreEqual(ResultComplete.Success, result.Status);
+            Assert.AreEqual("TEST", result.Messages.First());
         }
     }
 }
