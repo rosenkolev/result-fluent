@@ -29,7 +29,7 @@ namespace FluentResult
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
         /// <typeparam name="T2">The type of the second result.</typeparam>
-        /// <typeparam name="T3">The type of the thurd result.</typeparam>
+        /// <typeparam name="T3">The type of the third result.</typeparam>
         /// <typeparam name="TOut">The destination result type.</typeparam>
         [DebuggerStepThrough]
         public static Result<TOut> Combine<TIn, T1, T2, T3, TOut>(
@@ -48,7 +48,7 @@ namespace FluentResult
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
         /// <typeparam name="T2">The type of the second result.</typeparam>
-        /// <typeparam name="T3">The type of the thurd result.</typeparam>
+        /// <typeparam name="T3">The type of the third result.</typeparam>
         /// <typeparam name="T4">The type of the fourth result.</typeparam>
         /// <typeparam name="TOut">The destination result type.</typeparam>
         [DebuggerStepThrough]
@@ -68,9 +68,9 @@ namespace FluentResult
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
         /// <typeparam name="T2">The type of the second result.</typeparam>
-        /// <typeparam name="T3">The type of the thurd result.</typeparam>
+        /// <typeparam name="T3">The type of the third result.</typeparam>
         /// <typeparam name="T4">The type of the fourth result.</typeparam>
-        /// <typeparam name="T5">The type of the sixt result.</typeparam>
+        /// <typeparam name="T5">The type of the sixth result.</typeparam>
         /// <typeparam name="TOut">The destination result type.</typeparam>
         [DebuggerStepThrough]
         public static Result<TOut> Combine<TIn, T1, T2, T3, T4, T5, TOut>(
