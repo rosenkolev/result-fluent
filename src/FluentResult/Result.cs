@@ -203,7 +203,7 @@ namespace FluentResult
             string message) =>
             Validate(await entityTask, predicate, status, message, skipOnInvalidResult: false);
 
-        /// <summary>Validate a result asynchronius.</summary>
+        /// <summary>Validate a result asynchronous.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
         public static async Task<Result<TResult>> ValidateAsync<TResult>(
