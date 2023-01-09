@@ -17,8 +17,7 @@ namespace FluentResult
             this Result<TIn> result,
             Func<TIn, (Result<T1>, Result<T2>)> requests,
             Func<TIn, T1, T2, TOut> map) =>
-            Result.Switch(
-                result,
+            result.Switch(
                 data =>
                 {
                     var (r1, r2) = requests(data);
@@ -36,8 +35,7 @@ namespace FluentResult
             this Result<TIn> result,
             Func<TIn, (Result<T1>, Result<T2>, Result<T3>)> requests,
             Func<TIn, T1, T2, T3, TOut> map) =>
-            Result.Switch(
-                result,
+            result.Switch(
                 data =>
                 {
                     var (r1, r2, r3) = requests(data);
@@ -56,8 +54,7 @@ namespace FluentResult
             this Result<TIn> result,
             Func<TIn, (Result<T1>, Result<T2>, Result<T3>, Result<T4>)> requests,
             Func<TIn, T1, T2, T3, T4, TOut> map) =>
-            Result.Switch(
-                result,
+            result.Switch(
                 data =>
                 {
                     var (r1, r2, r3, r4) = requests(data);
@@ -77,8 +74,7 @@ namespace FluentResult
             this Result<TIn> result,
             Func<TIn, (Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>)> requests,
             Func<TIn, T1, T2, T3, T4, T5, TOut> map) =>
-            Result.Switch(
-                result,
+            result.Switch(
                 data =>
                 {
                     var (r1, r2, r3, r4, r5) = requests(data);
@@ -95,8 +91,7 @@ namespace FluentResult
             this Task<Result<TIn>> resultAsync,
             Func<TIn, (Task<Result<T1>>, Task<Result<T2>>)> requests,
             Func<TIn, T1, T2, TOut> map) =>
-            Result.SwitchAsync(
-                resultAsync,
+            resultAsync.SwitchAsync(
                 async data =>
                 {
                     var (r1Async, r2Async) = requests(data);
@@ -115,8 +110,7 @@ namespace FluentResult
             this Task<Result<TIn>> resultAsync,
             Func<TIn, (Task<Result<T1>>, Task<Result<T2>>, Task<Result<T3>>)> requests,
             Func<TIn, T1, T2, T3, TOut> map) =>
-            Result.SwitchAsync(
-                resultAsync,
+            resultAsync.SwitchAsync(
                 async data =>
                 {
                     var (r1Async, r2Async, r3Async) = requests(data);
@@ -136,8 +130,7 @@ namespace FluentResult
             this Task<Result<TIn>> resultAsync,
             Func<TIn, (Task<Result<T1>>, Task<Result<T2>>, Task<Result<T3>>, Task<Result<T4>>)> requests,
             Func<TIn, T1, T2, T3, T4, TOut> map) =>
-            Result.SwitchAsync(
-                resultAsync,
+            resultAsync.SwitchAsync(
                 async data =>
                 {
                     var (r1Async, r2Async, r3Async, r4Async) = requests(data);
@@ -158,8 +151,7 @@ namespace FluentResult
             this Task<Result<TIn>> resultAsync,
             Func<TIn, (Task<Result<T1>>, Task<Result<T2>>, Task<Result<T3>>, Task<Result<T4>>, Task<Result<T5>>)> requests,
             Func<TIn, T1, T2, T3, T4, T5, TOut> map) =>
-            Result.SwitchAsync(
-                resultAsync,
+            resultAsync.SwitchAsync(
                 async data =>
                 {
                     var (r1Async, r2Async, r3Async, r4Async, r5Async) = requests(data);
@@ -175,11 +167,11 @@ namespace FluentResult
         {
             if (!r1.IsSuccessfulStatus())
             {
-                return Result.To(r1, default(TOut));
+                return r1.To(default(TOut)!);
             }
             else if (!r2.IsSuccessfulStatus())
             {
-                return Result.To(r2, default(TOut));
+                return r2.To(default(TOut)!);
             }
 
             return Result.Create(map(data, r1.Data, r2.Data));
@@ -194,15 +186,15 @@ namespace FluentResult
         {
             if (!r1.IsSuccessfulStatus())
             {
-                return Result.To(r1, default(TOut));
+                return r1.To(default(TOut)!);
             }
             else if (!r2.IsSuccessfulStatus())
             {
-                return Result.To(r2, default(TOut));
+                return r2.To(default(TOut)!);
             }
             else if (!r3.IsSuccessfulStatus())
             {
-                return Result.To(r3, default(TOut));
+                return r3.To(default(TOut)!);
             }
 
             return Result.Create(map(data, r1.Data, r2.Data, r3.Data));
@@ -218,19 +210,19 @@ namespace FluentResult
         {
             if (!r1.IsSuccessfulStatus())
             {
-                return Result.To(r1, default(TOut));
+                return r1.To(default(TOut)!);
             }
             else if (!r2.IsSuccessfulStatus())
             {
-                return Result.To(r2, default(TOut));
+                return r2.To(default(TOut)!);
             }
             else if (!r3.IsSuccessfulStatus())
             {
-                return Result.To(r3, default(TOut));
+                return r3.To(default(TOut)!);
             }
             else if (!r4.IsSuccessfulStatus())
             {
-                return Result.To(r4, default(TOut));
+                return r4.To(default(TOut)!);
             }
 
             return Result.Create(map(data, r1.Data, r2.Data, r3.Data, r4.Data));
@@ -247,23 +239,23 @@ namespace FluentResult
         {
             if (!r1.IsSuccessfulStatus())
             {
-                return Result.To(r1, default(TOut));
+                return r1.To(default(TOut)!);
             }
             else if (!r2.IsSuccessfulStatus())
             {
-                return Result.To(r2, default(TOut));
+                return r2.To(default(TOut)!);
             }
             else if (!r3.IsSuccessfulStatus())
             {
-                return Result.To(r3, default(TOut));
+                return r3.To(default(TOut)!);
             }
             else if (!r4.IsSuccessfulStatus())
             {
-                return Result.To(r4, default(TOut));
+                return r4.To(default(TOut)!);
             }
             else if (!r5.IsSuccessfulStatus())
             {
-                return Result.To(r5, default(TOut));
+                return r5.To(default(TOut)!);
             }
 
             return Result.Create(map(data, r1.Data, r2.Data, r3.Data, r4.Data, r5.Data));

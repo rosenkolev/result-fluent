@@ -7,7 +7,7 @@ namespace FluentResult
     public class Result<TResult>
     {
         /// <summary>Initializes a new instance of the <see cref="Result{TResult}"/> class.</summary>
-        public Result(TResult data, ResultComplete status, ICollection<string> messages)
+        public Result(TResult data, ResultComplete status, ICollection<string>? messages)
         {
             Data = data;
             Status = status;
@@ -27,7 +27,7 @@ namespace FluentResult
         public ResultComplete Status { get; private set; }
 
         /// <summary>Gets the message.</summary>
-        public ICollection<string> Messages { get; private set; }
+        public ICollection<string>? Messages { get; private set; }
 
         /// <summary>Determines whether [is successful status].</summary>
         public bool IsSuccessfulStatus() =>
