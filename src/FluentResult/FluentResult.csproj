@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Globals">
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <Product>FluentResult</Product>
     <PackageId>ResultFluent</PackageId>
     <Authors>Rosen Kolev</Authors>
+	<LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <Description>A service result library that can map and validate in a fluent way</Description>
     <RepositoryUrl>https://github.com/rosenkolev/result-fluent</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>

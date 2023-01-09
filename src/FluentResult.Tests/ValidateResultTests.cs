@@ -197,5 +197,79 @@ namespace FluentResult.Tests
             Assert.AreEqual("A", res.Messages.First());
             Assert.AreEqual("B", res.Messages.Last());
         }
+
+        [TestMethod]
+        public void ValidateNotNull_ShouldSkip()
+        {
+            var res = Result.Create<string>(null)
+                .Validate(false, ResultComplete.InvalidArgument, "A")
+                .ValidateNotNull(
+                    ResultComplete.Conflict,
+                    "B",
+                    skipOnInvalidResult: true);
+
+            Assert.AreEqual(1, res.Messages.Count);
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(null, res.Data);
+        }
+
+        [TestMethod]
+        public void ValidateNotNull_ShouldCheck()
+        {
+            var res = Result.Create<string>(null)
+                .Validate(false, ResultComplete.InvalidArgument, "A")
+                .ValidateNotNull(ResultComplete.Conflict, "B", skipOnInvalidResult: false);
+
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual(ResultComplete.Conflict, res.Status);
+        }
+
+        [TestMethod]
+        public void ValidateNotNull_ShouldPass()
+        {
+            var res = Result.Create("TEST").ValidateNotNull(ResultComplete.Conflict, "B");
+
+            Assert.AreEqual(null, res.Messages);
+            Assert.AreEqual(ResultComplete.Success, res.Status);
+            Assert.AreEqual("TEST", res.Data);
+        }
+
+        [TestMethod]
+        public async Task ValidateNotNullAsync_ShouldSkip()
+        {
+            var res = await Result.Create<string>(null)
+                .ValidateAsync(arg => Task.Run(() => false), ResultComplete.InvalidArgument, "A")
+                .ValidateNotNullAsync(
+                    ResultComplete.Conflict,
+                    "B",
+                    skipOnInvalidResult: true);
+
+            Assert.AreEqual(1, res.Messages.Count);
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(null, res.Data);
+        }
+
+        [TestMethod]
+        public async Task ValidateNotNullAsync_ShouldCheck()
+        {
+            var res = await Result.Create<string>(null)
+                .ValidateAsync(arg => Task.Run(() => false), ResultComplete.InvalidArgument, "A")
+                .ValidateNotNullAsync(ResultComplete.Conflict, "B", skipOnInvalidResult: false);
+
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual(ResultComplete.Conflict, res.Status);
+        }
+
+        [TestMethod]
+        public async Task ValidateNotNullAsync_ShouldPass()
+        {
+            var res = await Result.Create("TEST")
+                .ValidateAsync(arg => Task.Run(() => true), ResultComplete.InvalidArgument, "A")
+                .ValidateNotNullAsync(ResultComplete.Conflict, "B");
+
+            Assert.AreEqual(null, res.Messages);
+            Assert.AreEqual(ResultComplete.Success, res.Status);
+            Assert.AreEqual("TEST", res.Data);
+        }
     }
 }

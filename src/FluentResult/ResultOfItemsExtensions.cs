@@ -17,8 +17,8 @@ namespace FluentResult
             Func<TCollection, ResultOfItems<TEntity>> converter)
             where TCollection : IReadOnlyCollection<TEntity> =>
             result.Status == ResultComplete.Success ?
-            converter?.Invoke(result.Data) :
-            new ResultOfItems<TEntity>(default, result.Status, result.Messages);
+            converter(result.Data) :
+            new ResultOfItems<TEntity>(default!, result.Status, result.Messages);
 
         /// <summary>Convert an result entity to result of items.</summary>
         /// <typeparam name="TEntity">The entity object.</typeparam>
@@ -29,8 +29,8 @@ namespace FluentResult
             Func<TCollection, Task<ResultOfItems<TEntity>>> converterAsync)
             where TCollection : IReadOnlyCollection<TEntity> =>
             result.Status == ResultComplete.Success ?
-            await converterAsync?.Invoke(result.Data) :
-            new ResultOfItems<TEntity>(default, result.Status, result.Messages);
+            await converterAsync(result.Data) :
+            new ResultOfItems<TEntity>(default!, result.Status, result.Messages);
 
         /// <summary>Convert an result entity to result of items.</summary>
         /// <typeparam name="TEntity">The entity object.</typeparam>

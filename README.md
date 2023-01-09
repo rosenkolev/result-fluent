@@ -104,6 +104,16 @@ Result<bool> validateResult =
         .Validate(user => user.UserId > 0, ResultComplete.InvalidArgument, "User identifier is required", skipOnInvalidResult: true);
 ```
 
+Validate nullable
+
+```
+Result<bool> validateResult =
+    Result
+        .Create<string?>(name)
+        .ValidateNotNull(ResultComplete.InvalidArgument, "Name is null")
+        .Validate(name => /** name is not null */, ResultComplete.InvalidArgument, "");
+```
+
 Chain validation and mapping
 
 ```csharp
@@ -165,6 +175,17 @@ Result<int> AddAndDouble(int a, int b) =>
         .Map(value => $"The result is {value}");
 
 AddAndDouble(2, 3) // Data = "The result is 10"
+```
+
+## Ensure successful result and return data
+
+```csharp
+// return user or throw exception
+User validatedUser =
+    Result
+        .Create(user)
+		.ValidateNotNull(ResultComplete.InvalidArgument, string.Empty)
+		.AsValidData();
 ```
 
 ## Catch Exception

@@ -11,7 +11,7 @@ namespace FluentResult
         public ResultOfItems(
             IEnumerable<TItem> items,
             ResultComplete status,
-            ICollection<string> messages,
+            ICollection<string>? messages,
             int? totalCount,
             int? pageSize,
             int? pageIndex,
@@ -28,12 +28,12 @@ namespace FluentResult
         }
 
         /// <summary>Initializes a new instance of the <see cref="ResultOfItems{TItem}"/> class.</summary>
-        public ResultOfItems(IEnumerable<TItem> data, ResultComplete status, ICollection<string> messages)
+        public ResultOfItems(IEnumerable<TItem> data, ResultComplete status, ICollection<string>? messages)
             : base(data, status, messages)
         {
         }
 
         /// <summary>Gets the metadata.</summary>
-        public ResultMetadata Metadata { get; private set; }
+        public ResultMetadata? Metadata { get; private set; }
     }
 }
