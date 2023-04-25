@@ -1,7 +1,7 @@
 ﻿namespace FluentResult
 {
     /// <summary>The operation status types.</summary>
-    public enum ResultComplete
+    public enum ResultComplete : byte
     {
         /// <summary>The success status</summary>
         Success,

@@ -25,6 +25,14 @@ namespace FluentResult
             new Result<TResult>(default!, status, messages);
 
         /// <summary>Validates the specified condition.</summary>
+        /// <remarks>
+        /// <code>
+        /// var result = Result.Validate(
+        ///   userId > 0,
+        ///   ResultComplete.InvalidArgument,
+        ///   "User identifier should be a positive number.");
+        /// </code>
+        /// </remarks>
         [DebuggerStepThrough]
         public static Result<bool> Validate(bool condition, ResultComplete status, string message) =>
             condition ? Create(true) : CreateResultWithError<bool>(status, message);

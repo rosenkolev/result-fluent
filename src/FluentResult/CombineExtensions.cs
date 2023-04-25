@@ -1,4 +1,6 @@
-﻿using System;
+﻿// cspell:ignore Jhon
+
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -7,7 +9,40 @@ namespace FluentResult
     /// <summary>Combine extensions to Result.</summary>
     public static class CombineExtensions
     {
+        /// <summary>Combine two results into a single result.</summary>
+        /// <remarks>
+        /// <code>
+        /// var result = Result.Create(user)
+        ///   .Combine(
+        ///     user => _roleRepository.GetByRoleId(user.roleId),
+        ///     (user, role) => $"User {user.Name} has role {role.Name}.");
+        /// </code>
+        /// <i>User Jhon has role Administrator.</i>
+        /// </remarks>
+        /// <typeparam name="TIn">The source result type.</typeparam>
+        /// <typeparam name="T1">The type of the first result.</typeparam>
+        /// <typeparam name="TOut">The destination result type.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TOut> Combine<TIn, T1, TOut>(
+            this Result<TIn> result,
+            Func<TIn, Result<T1>> requests,
+            Func<TIn, T1, TOut> map) =>
+            result.Switch(
+                data => CombineResults(data, requests(data), map));
+
         /// <summary>Combine three Results into a single Result.</summary>
+        /// <remarks>
+        /// A simple example:
+        /// <code>
+        /// var result = Result.Create(await GetUserById(5))
+        ///   .Combine(
+        ///     user => (
+        ///       _roleRepository.GetByRoleId(user.roleId),
+        ///       _friendsRepository.GetFriendsCountByUserId(user.UserId)),
+        ///     (user, role, friendsCount) => $"User {user.Name} with role {role.Name} has {friendsCount} friends.");
+        /// </code>
+        /// <i>User Jhon with role Administrator has 23 friends.</i>
+        /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
         /// <typeparam name="T2">The type of the second result.</typeparam>
@@ -81,7 +116,45 @@ namespace FluentResult
                     return CombineResults(data, r1, r2, r3, r4, r5, map);
                 });
 
+        /// <summary>Combine two results into a single result.</summary>
+        /// <remarks>
+        /// A simple example:
+        /// <code>
+        /// var result = Result.Create(user)
+        ///   .CombineAsync(
+        ///     user => _roleRepository.GetByRoleIdAsync(user.roleId),
+        ///     (user, role) => $"User {user.Name} has role {role.Name}.");
+        /// </code>
+        /// <i>User Jhon has role Administrator.</i>
+        /// </remarks>
+        /// <typeparam name="TIn">The source result type.</typeparam>
+        /// <typeparam name="T1">The type of the first result.</typeparam>
+        /// <typeparam name="TOut">The destination result type.</typeparam>
+        [DebuggerStepThrough]
+        public static Task<Result<TOut>> CombineAsync<TIn, T1, TOut>(
+            this Task<Result<TIn>> resultAsync,
+            Func<TIn, Task<Result<T1>>> requests,
+            Func<TIn, T1, TOut> map) =>
+            resultAsync.SwitchAsync(
+                async data =>
+                {
+                    var r1 = await requests(data).ConfigureAwait(false);
+                    return CombineResults(data, r1, map);
+                });
+
         /// <summary>Combine three Results into a single Result.</summary>
+        /// <remarks>
+        /// A simple example:
+        /// <code>
+        /// var result = Result.Create(await GetUserById(5))
+        ///   .CombineAsync(
+        ///     user => (
+        ///       _roleRepository.GetByRoleIdAsync(user.roleId),
+        ///       _friendsRepository.GetFriendsCountByUserIdAsync(user.UserId)),
+        ///     (user, role, friendsCount) => $"User {user.Name} with role {role.Name} has {friendsCount} friends.");
+        /// </code>
+        /// <i>User Jhon with role Administrator has 23 friends.</i>
+        /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
         /// <typeparam name="T2">The type of the second result.</typeparam>
@@ -158,6 +231,14 @@ namespace FluentResult
                     await Task.WhenAll(r1Async, r2Async, r3Async, r4Async, r5Async);
                     return CombineResults(data, r1Async.Result, r2Async.Result, r3Async.Result, r4Async.Result, r5Async.Result, map);
                 });
+
+        private static Result<TOut> CombineResults<TIn, T1, TOut>(
+            TIn data,
+            Result<T1> r1,
+            Func<TIn, T1, TOut> map) =>
+            !r1.IsSuccessfulStatus()
+                ? r1.To(default(TOut)!)
+                : Result.Create(map(data, r1.Data));
 
         private static Result<TOut> CombineResults<TIn, T1, T2, TOut>(
             TIn data,

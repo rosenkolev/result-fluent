@@ -14,6 +14,11 @@ namespace FluentResult
         public static Result<TOut> To<TIn, TOut>(this Result<TIn> result, TOut defaultValue) =>
             new Result<TOut>(defaultValue, result.Status, result.Messages);
 
+        /// <summary>Convert to another result.</summary>
+        /// <typeparam name="TEntity">The entity object.</typeparam>
+        [DebuggerStepThrough]
+        public static Async<TEntity> ToAsync<TEntity>(this Task<Result<TEntity>> result) => new (result);
+
         /// <summary>Switch the result to a new result.</summary>
         /// <typeparam name="TEntity">The entity object.</typeparam>
         /// <typeparam name="TModel">The model object.</typeparam>
@@ -38,27 +43,6 @@ namespace FluentResult
         [DebuggerStepThrough]
         public static async Task<Result<TOut>> SwitchAsync<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TIn, Task<Result<TOut>>> pipelineAction) =>
             await SwitchAsync(await resultTask, pipelineAction);
-
-        /// <summary>Resolve the result data when it is valid status code.</summary>
-        /// <typeparam name="T">The type of the data.</typeparam>
-        /// <exception cref="InvalidOperationException">When status code is not `Success`.</exception>
-        [DebuggerStepThrough]
-        public static T AsValidData<T>(this Result<T> result)
-        {
-            if (!result.IsSuccessfulStatus())
-            {
-                throw new InvalidOperationException($"Invalid status code '{result.Status}'.");
-            }
-
-            return result.Data;
-        }
-
-        /// <summary>Resolve the result data when it is valid status code.</summary>
-        /// <typeparam name="T">The type of the data.</typeparam>
-        /// <exception cref="InvalidOperationException">When status code is not `Success`.</exception>
-        [DebuggerStepThrough]
-        public static async Task<T> AsValidDataAsync<T>(this Task<Result<T>> asyncResult) =>
-            AsValidData(await asyncResult);
 
         /// <summary>Handle exceptions in async call.</summary>
         /// <typeparam name="TEntity">The entity object.</typeparam>
