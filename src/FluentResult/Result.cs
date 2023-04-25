@@ -30,7 +30,7 @@ namespace FluentResult
         /// var result = Result.Validate(
         ///   userId > 0,
         ///   ResultComplete.InvalidArgument,
-        ///   "User identifier should be a prositive number.");
+        ///   "User identifier should be a positive number.");
         /// </code>
         /// </remarks>
         [DebuggerStepThrough]

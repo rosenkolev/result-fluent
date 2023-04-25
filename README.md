@@ -284,7 +284,7 @@ Task<Result<Classroom>> UpdateClassroomAsync(UpdateClassroomRequest request) =>
 
 ## Async helper class
 
-The [Async](src/FluentResult/Async.cs) struct is a helper struct to reduce code definition.
+The [Async](src/FluentResult/Async.cs) is a helper structure to reduce code definitions.
 ```csharp
 Task<Result<IReadOnlyList<string>>> GetNamesAsync();
 // Becomes
