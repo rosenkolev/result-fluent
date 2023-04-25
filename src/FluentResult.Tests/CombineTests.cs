@@ -9,6 +9,17 @@ namespace FluentResult.Tests
     public sealed class CombineTests
     {
         [TestMethod]
+        public void Combine2()
+        {
+            var result = Result.Create(1)
+                .Combine(
+                    id => Result.Create(2 + id),
+                   (a, b) => a + b);
+
+            Assert.AreEqual(4, result.Data);
+        }
+
+        [TestMethod]
         public void Combine3()
         {
             var result = Result.Create(2)
@@ -60,6 +71,16 @@ namespace FluentResult.Tests
                    (a, b, c, d, e, f) => $"{a}_{b}_{c}_{d}_{e}_{f}");
 
             Assert.AreEqual("2_True_3_4_5_6", result.Data);
+        }
+
+        [TestMethod]
+        public async Task Combine2Async()
+        {
+            var result = await Helper.Async(1).CombineAsync(
+                _ => Helper.Async("2"),
+                (a, b) => $"{a}_{b}");
+
+            Assert.AreEqual("1_2", result.Data);
         }
 
         [TestMethod]
