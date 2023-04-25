@@ -15,7 +15,7 @@ namespace FluentResult
         ///     user => _roleRepository.GetByRoleId(user.roleId),
         ///     (user, role) => $"User {user.Name} has role {role.Name}.");
         /// </code>
-        /// <i>User Jhon has role Administrator</i>.
+        /// <i>User Jhon has role Administrator.</i>
         /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
@@ -25,11 +25,11 @@ namespace FluentResult
             this Result<TIn> result,
             Func<TIn, Result<T1>> requests,
             Func<TIn, T1, TOut> map) =>
-            Result.Switch(
-                result,
+            result.Switch(
                 data => CombineResults(data, requests(data), map));
 
         /// <summary>Combine three Results into a single Result.</summary>
+        /// <remarks>
         /// A simple example:
         /// <code>
         /// var result = Result.Create(await GetUserById(5))
@@ -39,7 +39,7 @@ namespace FluentResult
         ///       _friendsRepository.GetFriendsCountByUserId(user.UserId)),
         ///     (user, role, friendsCount) => $"User {user.Name} with role {role.Name} has {friendsCount} friends.");
         /// </code>
-        /// <i>User Jhon with role Administrator has 23 friends</i>.
+        /// <i>User Jhon with role Administrator has 23 friends.</i>
         /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
@@ -123,7 +123,7 @@ namespace FluentResult
         ///     user => _roleRepository.GetByRoleIdAsync(user.roleId),
         ///     (user, role) => $"User {user.Name} has role {role.Name}.");
         /// </code>
-        /// <i>User Jhon has role Administrator</i>.
+        /// <i>User Jhon has role Administrator.</i>
         /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
@@ -133,8 +133,7 @@ namespace FluentResult
             this Task<Result<TIn>> resultAsync,
             Func<TIn, Task<Result<T1>>> requests,
             Func<TIn, T1, TOut> map) =>
-            Result.SwitchAsync(
-                resultAsync,
+            resultAsync.SwitchAsync(
                 async data =>
                 {
                     var r1 = await requests(data).ConfigureAwait(false);
@@ -152,7 +151,7 @@ namespace FluentResult
         ///       _friendsRepository.GetFriendsCountByUserIdAsync(user.UserId)),
         ///     (user, role, friendsCount) => $"User {user.Name} with role {role.Name} has {friendsCount} friends.");
         /// </code>
-        /// <i>User Jhon with role Administrator has 23 friends</i>.
+        /// <i>User Jhon with role Administrator has 23 friends.</i>
         /// </remarks>
         /// <typeparam name="TIn">The source result type.</typeparam>
         /// <typeparam name="T1">The type of the first result.</typeparam>
@@ -236,7 +235,7 @@ namespace FluentResult
             Result<T1> r1,
             Func<TIn, T1, TOut> map) =>
             !r1.IsSuccessfulStatus()
-                ? Result.To(r1, default(TOut))
+                ? r1.To(default(TOut)!)
                 : Result.Create(map(data, r1.Data));
 
         private static Result<TOut> CombineResults<TIn, T1, T2, TOut>(

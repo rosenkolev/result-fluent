@@ -33,6 +33,21 @@ namespace FluentResult.Tests
         }
 
         [TestMethod]
+        public async Task MapAsyncShouldSkipInvalid()
+        {
+            var initialResult = new Result<int>(1, ResultComplete.InvalidArgument, new[] { "A" });
+            var passThought = false;
+            var result = await initialResult.MapAsync(t =>
+            {
+                passThought = true;
+                return Task.FromResult("OK");
+            });
+
+            Assert.IsNull(result.Data);
+            Assert.IsFalse(passThought);
+        }
+
+        [TestMethod]
         public void MapList()
         {
             var models = new[] { 3, 5 };

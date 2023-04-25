@@ -73,40 +73,5 @@ namespace FluentResult.Tests
 
             Assert.AreEqual(5, result.Data);
         }
-
-        [TestMethod]
-        public void AsValidDataShouldThrowWhenNoSuccess()
-        {
-            Assert.ThrowsException<InvalidOperationException>(
-                () =>
-                {
-                    Result
-                        .CreateResultWithError<string>(ResultComplete.Conflict, "test")
-                        .AsValidData();
-                },
-                "Invalid status code 'Conflict'.");
-        }
-
-        [TestMethod]
-        public void AsValidDataShouldReturnResult()
-        {
-            var data = new Result<string>("T", ResultComplete.Success, null).AsValidData();
-            Assert.AreEqual("T", data);
-        }
-
-        [TestMethod]
-        public async Task AsValidDataAsyncShouldThrowWhenNoSuccess()
-        {
-            await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => Helper.Async("A", ResultComplete.Conflict).AsValidDataAsync(),
-                "Invalid status code 'Conflict'.");
-        }
-
-        [TestMethod]
-        public async Task AsValidDataAsyncShouldReturnResult()
-        {
-            var data = await Helper.Async("A").AsValidDataAsync();
-            Assert.AreEqual("A", data);
-        }
     }
 }

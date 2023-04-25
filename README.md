@@ -186,6 +186,16 @@ User validatedUser =
         .Create(user)
 		.ValidateNotNull(ResultComplete.InvalidArgument, string.Empty)
 		.AsValidData();
+		
+// When invalid we throw [ResultValidationException](src/FluentResult/ResultValidationException.cs).
+Result
+  .Validate(false, ResultComplete.OperationFailed, "Invalid result")
+  .AsValidData();
+  
+// We can also use `AsValidDataAsync` for `Task<Result<TSource>>` and `Task<ResultOfItems<TSource>>`.
+Result.Create(5)
+  .MapAsync(Task.FromResult)
+  .AsValidDataAsync();
 ```
 
 ## Catch Exception
@@ -243,6 +253,11 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
 
 ## Combine and CombineAsync
 ```csharp
+// We can combine from 1 to 5 results.
+var helloWorld = Result.Create("Hello").Combine(
+	number => Result.Create("World"),
+	(a, b) => a + b);
+
 // Sum is 9
 var sum = Result.Create(2).Combine(
 	number => (
@@ -265,6 +280,21 @@ Task<Result<Classroom>> UpdateClassroomAsync(UpdateClassroomRequest request) =>
 				classroom.Teacher = teacher;
 				await _classroomRepository.UpdateAsync(classroom);
 			});
+```
+
+## Async helper class
+
+The [Async](src/FluentResult/Async.cs) struct is a helper struct to reduce code definition.
+```csharp
+Task<Result<IReadOnlyList<string>>> GetNamesAsync();
+// Becomes
+Async<IReadOnlyList<string>> GetNamesAsync();
+```
+
+We can use `.AsAsync()` extension method.
+
+```csharp
+Async task = Result.Create(5).MapAsync(Task.FromResult).ToAsync();
 ```
 
 ## Deserialize the as Result<TResult>
