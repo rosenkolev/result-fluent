@@ -34,7 +34,7 @@ namespace FluentResult.Tests
             var res = Result
                 .Validate(true, ResultComplete.InvalidArgument, null)
                 .Validate(1 == 1, ResultComplete.InvalidArgument, null)
-                .Validate(valid => 2 == 2, ResultComplete.InvalidArgument, null);
+                .Validate(valid => 2 == 2, ResultComplete.InvalidArgument, default(string));
 
             Assert.IsTrue(res.IsSuccessfulStatus());
             Assert.IsTrue(res.Data);
@@ -53,6 +53,79 @@ namespace FluentResult.Tests
             Assert.AreEqual(2, res.Messages.Count);
             Assert.IsTrue(res.Messages.Contains("2"));
             Assert.IsTrue(res.Messages.Contains("3"));
+        }
+
+        [TestMethod]
+        public void ValidateMessageDelegateSuccess()
+        {
+            var res = Result
+                .Create(new { Status = 0, Value = 1 })
+                .Validate(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}");
+
+            Assert.IsTrue(res.IsSuccessfulStatus());
+            Assert.AreEqual(0, res.Data.Status);
+            Assert.AreEqual(1, res.Data.Value);
+        }
+
+        [TestMethod]
+        public void ValidateMessageDelegateFail()
+        {
+            var res = Result
+                .Create(new { Status = 1, Value = 1 })
+                .Validate(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}");
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(1, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
+        }
+
+        [TestMethod]
+        public void ValidateMessageDelegateMultiFail()
+        {
+            var res = Result
+                .Create(new { Status = 1, Value = 1 })
+                .Validate(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}")
+                .Validate(
+                    x => x.Value == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with value: {x.Value}");
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
+            Assert.AreEqual(res.Messages.Skip(1).First(), "Failed with value: 1");
+        }
+
+        [TestMethod]
+        public void ValidateMessageDelegateMultiFailWithSkip()
+        {
+            var res = Result
+                .Create(new { Status = 1, Value = 1 })
+                .Validate(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}")
+                .Validate(
+                    x => x.Value == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with value: {x.Value}",
+                    skipOnInvalidResult: true);
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(1, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
         }
 
         [TestMethod]
@@ -196,6 +269,93 @@ namespace FluentResult.Tests
             Assert.AreEqual(2, res.Messages.Count);
             Assert.AreEqual("A", res.Messages.First());
             Assert.AreEqual("B", res.Messages.Last());
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncMessageDelegateSuccess()
+        {
+            var res = await Result
+                .Create(1)
+                .MapAsync(x => Task.FromResult(new { Status = 0, Value = x }))
+                .ValidateAsync(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}");
+
+            Assert.IsTrue(res.IsSuccessfulStatus());
+            Assert.AreEqual(0, res.Data.Status);
+            Assert.AreEqual(1, res.Data.Value);
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncMessageDelegateFail()
+        {
+            var res = await Result
+               .Create(1)
+               .MapAsync(x => Task.FromResult(new { Status = x, Value = x }))
+               .ValidateAsync(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}");
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(1, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncMessageDelegateMultiFail()
+        {
+            var res = await Result
+                .Create(1)
+                .MapAsync(x => Task.FromResult(new { Status = x, Value = x }))
+                .ValidateAsync(
+                    x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}")
+                .ValidateAsync(
+                    x => Task.FromResult(x.Value == 0),
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with value: {x.Value}");
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
+            Assert.AreEqual(res.Messages.Skip(1).First(), "Failed with value: 1");
+        }
+
+        [TestMethod]
+        public async Task ValidateAsyncMessageDelegateMultiFailWithSkip()
+        {
+            var res = await Result
+                .Create(1)
+                .MapAsync(x => Task.FromResult(new { Status = x, Value = x }))
+                .ValidateAsync(
+                   x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with status: {x.Status}")
+                .ValidateAsync(
+                   x => x.Status == 0,
+                    ResultComplete.InvalidArgument,
+                    x => $"Skip Failed with status: {x.Status}",
+                    skipOnInvalidResult: true)
+                .ValidateAsync(
+                    x => Task.FromResult(x.Value == 0),
+                    ResultComplete.InvalidArgument,
+                    x => $"Failed with value: {x.Value}")
+                .ValidateAsync(
+                    x => Task.FromResult(x.Value == 0),
+                    ResultComplete.InvalidArgument,
+                    x => $"Skip Failed with value: {x.Value}",
+                    skipOnInvalidResult: true);
+
+            Assert.IsFalse(res.IsSuccessfulStatus());
+            Assert.AreEqual(ResultComplete.InvalidArgument, res.Status);
+            Assert.AreEqual(2, res.Messages.Count);
+            Assert.AreEqual(res.Messages.First(), "Failed with status: 1");
+            Assert.AreEqual(res.Messages.Skip(1).First(), "Failed with value: 1");
         }
 
         [TestMethod]

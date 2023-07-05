@@ -18,13 +18,14 @@ dotnet add package ResultFluent
 ```
 
 ## Models
+
 ```csharp
 class Result<TModel>
 {
     TModel Data { get; }
     ResultComplete Status { get; }
     ICollection<string> Messages { get; }
-    
+
     bool IsSuccessfulStatus();
 }
 
@@ -82,7 +83,7 @@ Static validation
 
 ```csharp
 int userId = -1;
-int userName = string.Empty;
+string userName = string.Empty;
 Result<bool> validateResult =
     Result
         .Validate(userId > 0, ResultComplete.InvalidArgument, "User identifier must be positive number")
@@ -92,6 +93,20 @@ Result<bool> validateResult =
 //  Data = false
 //  Status = InvalidArgument
 //  Messages = string[] { "User identifier must be positive number", "User name is required" }
+
+string userName = "someLongUserName";
+Result<bool> validateResult =
+    Result
+        .Create(userName)
+        .Validate(
+            x => x.Length < 5,
+            ResultComplete.InvalidArgument,
+            x => $"User name must be less than 5 symbols, the provided value was {x.Length} symbols.")
+
+// validateResult:
+//  Data = "someLongUserName"
+//  Status = InvalidArgument
+//  Messages = string[] { "User name must be less than 5 symbols, the provided value was 12 symbols." }
 ```
 
 Validate can skip rules on fail
@@ -186,12 +201,12 @@ User validatedUser =
         .Create(user)
 		.ValidateNotNull(ResultComplete.InvalidArgument, string.Empty)
 		.AsValidData();
-		
+
 // When invalid we throw [ResultValidationException](src/FluentResult/ResultValidationException.cs).
 Result
   .Validate(false, ResultComplete.OperationFailed, "Invalid result")
   .AsValidData();
-  
+
 // We can also use `AsValidDataAsync` for `Task<Result<TSource>>` and `Task<ResultOfItems<TSource>>`.
 Result.Create(5)
   .MapAsync(Task.FromResult)
@@ -233,7 +248,7 @@ ResultOfItems<int> result = Result.CreateResultOfItems(
     pageIndex: 1);
 
 // or may be
-ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) => 
+ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
     Result
         .Validate(pageIndex >= 0, ResultComplete.InvalidArgument, "Page index is invalid")
         .Validate(pageSize > 0, ResultComplete.InvalidArgument, "Page size is invalid")
@@ -241,9 +256,9 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
             isValid => _itemsRepository.GetByPageAsync(pageIndex, pageSize))
         .ToResultOfItemsAsync(
             data => Result.CreateResultOfItems(data.Items, data.TotalCount, pageSize, pageIndex));
-			
+
 // or simply
-ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) => 
+ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
     Result
         .Validate(pageIndex >= 0, ResultComplete.InvalidArgument, "Page index is invalid")
         .Validate(pageSize > 0, ResultComplete.InvalidArgument, "Page size is invalid")
@@ -252,6 +267,7 @@ ResultOfItems<Item> GetItemsByPage(int pageIndex, int pageSize) =>
 ```
 
 ## Combine and CombineAsync
+
 ```csharp
 // We can combine from 1 to 5 results.
 var helloWorld = Result.Create("Hello").Combine(
@@ -264,7 +280,7 @@ var sum = Result.Create(2).Combine(
 		Result.Create(3),
 		Result.Create(4)),
 	(a, b, c) => a + b + c);
-	
+
 // async example
 Task<Result<Classroom>> UpdateClassroomAsync(UpdateClassroomRequest request) =>
     Result
@@ -285,6 +301,7 @@ Task<Result<Classroom>> UpdateClassroomAsync(UpdateClassroomRequest request) =>
 ## Async helper class
 
 The [Async](src/FluentResult/Async.cs) is a helper structure to reduce code definitions.
+
 ```csharp
 Task<Result<IReadOnlyList<string>>> GetNamesAsync();
 // Becomes

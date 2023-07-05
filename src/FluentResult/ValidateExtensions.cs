@@ -53,6 +53,27 @@ namespace FluentResult
             string message) =>
             Validate(result, predicate, status, message, skipOnInvalidResult: false);
 
+        /// <summary>Validate result data is not null.</summary>
+        /// <typeparam name="TResult">The type of the result data.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            Func<TResult, string> messageFunc,
+            bool skipOnInvalidResult) =>
+            Validate(result, predicate, status, messageFunc(result.Data), skipOnInvalidResult);
+
+        /// <summary>Validate result data is not null.</summary>
+        /// <typeparam name="TResult">The type of the result data.</typeparam>
+        [DebuggerStepThrough]
+        public static Result<TResult> Validate<TResult>(
+            this Result<TResult> result,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            Func<TResult, string> messageFunc) =>
+            Validate(result, predicate, status, messageFunc(result.Data), skipOnInvalidResult: false);
+
         /// <summary>Validates the specified condition.</summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         [DebuggerStepThrough]
@@ -101,6 +122,60 @@ namespace FluentResult
         {
             var result = await entityTask;
             return Validate(result, await predicateAsync(result.Data), status, message, skipOnInvalidResult: false);
+        }
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Task<Result<TResult>> entityTask,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            Func<TResult, string> messageFunc)
+        {
+            var result = await entityTask;
+            return Validate(result, predicate, status, messageFunc(result.Data));
+        }
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Task<Result<TResult>> entityTask,
+            Predicate<TResult> predicate,
+            ResultComplete status,
+            Func<TResult, string> messageFunc,
+            bool skipOnInvalidResult)
+        {
+            var result = await entityTask;
+            return Validate(result, predicate, status, messageFunc(result.Data), skipOnInvalidResult);
+        }
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Task<Result<TResult>> entityTask,
+            Func<TResult, Task<bool>> predicateAsync,
+            ResultComplete status,
+            Func<TResult, string> messageFunc)
+        {
+            var result = await entityTask;
+            return Validate(result, await predicateAsync(result.Data), status, messageFunc(result.Data));
+        }
+
+        /// <summary>Validates the specified condition.</summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        [DebuggerStepThrough]
+        public static async Task<Result<TResult>> ValidateAsync<TResult>(
+            this Task<Result<TResult>> entityTask,
+            Func<TResult, Task<bool>> predicateAsync,
+            ResultComplete status,
+            Func<TResult, string> messageFunc,
+            bool skipOnInvalidResult)
+        {
+            var result = await entityTask;
+            return Validate(result, await predicateAsync(result.Data), status, messageFunc(result.Data), skipOnInvalidResult);
         }
 
         /// <summary>Validate result data is not null.</summary>
