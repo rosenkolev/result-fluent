@@ -16,7 +16,14 @@ jobs:
       - name: Install dependencies
         run: dotnet restore src/
       - name: Test with dotnet
-        run: dotnet test --no-restore --logger trx --results-directory "TestResults" src/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="../../TestResults/"
+        run: dotnet test
+              --no-restore
+              --logger trx
+              --results-directory "TestResults"
+              src/
+              /p:CollectCoverage=true
+              /p:CoverletOutputFormat=opencover
+              /p:CoverletOutput="../../TestResults/"
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v2
         with:
@@ -27,15 +34,32 @@ jobs:
       - name: Upload dotnet test coverage
         run: bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -f TestResults/coverage.opencover.xml
       - name: Build with dotnet
-        run: dotnet build --no-restore --configuration Release src/FluentResult/FluentResult.csproj
+        run: dotnet build
+              --no-restore
+              --configuration Release
+              src/FluentResult/FluentResult.csproj
       - name: Create the package with symbols
-        run: dotnet pack --no-restore --configuration Release src/FluentResult/FluentResult.csproj --include-symbols -p:PackageVersion=${{NUGET_VERSION}}
+        run: dotnet pack
+              --no-restore
+              --configuration Release
+              src/FluentResult/FluentResult.csproj
+              --include-symbols
+              -p:PackageVersion=${{env.NUGET_VERSION}}
       - name: Clear nupkg for another package with readme
         run: rm src/FluentResult/bin/Release/*.nupkg
       - name: Create the package with readme
-        run: dotnet pack --no-restore --configuration Release src/FluentResult/FluentResult.csproj -p:PACK_README=true -p:PackageVersion=${{NUGET_VERSION}}
+        run: dotnet pack
+              --no-restore
+              --configuration Release
+              src/FluentResult/FluentResult.csproj
+              -p:PACK_README=true
+              -p:PackageVersion=${{env.NUGET_VERSION}}
       - name: Publish the package to nuget.org
-        run: dotnet nuget push src/FluentResult/bin/Release/*.nupkg --skip-duplicate -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push
+              src/FluentResult/bin/Release/*.nupkg
+              --skip-duplicate
+              -k $NUGET_AUTH_TOKEN
+              -s https://api.nuget.org/v3/index.json
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
   build_mvc:
@@ -53,11 +77,11 @@ jobs:
         run: nuget restore src\FluentResult.sln
       - name: Build FluentResult.Mvc with symbols
         run: |
-          msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:IncludeSymbols=true /p:PackageVersion=${{NUGET_VERSION}}
+          msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:IncludeSymbols=true /p:PackageVersion=${{env.NUGET_VERSION}}
       - name: Clear nupkg for another package with readme
         run: del src\FluentResult.Mvc\bin\Release\*.nupkg
       - name: Build FluentResult.Mvc with readme
         run: |
-          msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:PACK_README=true /p:PackageVersion=${{NUGET_VERSION}}
+          msbuild.exe src\FluentResult.Mvc\FluentResult.Mvc.csproj -t:pack /nologo /p:configuration="Release" /p:PACK_README=true /p:PackageVersion=${{env.NUGET_VERSION}}
       - name: Publish the package to nuget.org
         run: nuget push src\FluentResult.Mvc\bin\Release\*.nupkg -src https://api.nuget.org/v3/index.json -SkipDuplicate
