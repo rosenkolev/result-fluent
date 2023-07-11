@@ -1,5 +1,8 @@
 name: codeql analyze
 on:
+  pull_request:
+    types: [opened, reopened]
+    branches: [main, release-*]
   push:
     branches: [main, release-*]
 jobs:
