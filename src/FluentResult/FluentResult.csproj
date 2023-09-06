@@ -31,7 +31,7 @@
   <ItemGroup Label="Projects and Files Reference">
     <AdditionalFiles Include="..\tools\stylecop.json" />
     <None Include="..\..\resources\icons\result-icon-128.png" Pack="true" PackagePath="" Link="Properties\result-icon-128.png" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="" Link="Properties\README.md" />
+    <None Include="..\..\README.CORE.md" Pack="true" PackagePath="README.md" Link="Properties\README.md" />
   </ItemGroup>
   <ItemGroup Label="Code Analyzers">
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.*" PrivateAssets="All" />
