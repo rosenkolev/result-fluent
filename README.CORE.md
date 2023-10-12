@@ -20,7 +20,7 @@ class ResultOfItems<TItem> : Result<IEnumerable<TItem>>
 
 ## Creating a Result
 
-A Result can store Data, Messages and Status code.
+A Result can store Data, Messages, and a Status code.
 
 _Create a result which indicates success_
 
@@ -93,7 +93,7 @@ Result<Model> errorResult =
     "Model not found");
     
 /* {
- *   "Data" : null,
+ *   "Data": null,
  *   "Status": "NotFound",
  *   "Messages": ["Model not found"]
  * }
@@ -102,16 +102,28 @@ Result<Model> errorResult =
 
 ## Map and MapAsync
 
+Maps the `Data` model to another model.
+
+_Basic synchronous mapping_
+
 ```csharp
-// simple map
 Result<string> result =
     Result
         .Create(5)
         .Map(value => value * 2)
         .Map(value => $"value is {value}");
-// result.Data == "value is 10"
 
-// async map
+/* {
+ *   "Data": "value is 10",
+ *   "Status": "Success",
+ *   "Messages": null
+ * }
+ */
+```
+
+_Basic asynchronous mapping_
+
+```csharp
 Result<UserModel> result =
     await Result
         .Create(requestedUserId)
@@ -119,9 +131,26 @@ Result<UserModel> result =
         .MapAsync(user => ConvertUserToUserModel(user));
 ```
 
+> :warning: **In case the `Status` is not `Success`**, the mapper function is not executed and the Data becomes the `default(TResult)`.
+> 
+```csharp
+Result<int> result =
+    new Result<string>("1100", ResultComplete.InvalidArgument, new [] { "Invalid argument" })
+        .Map<int>(value => int.Parse(value));
+
+/* {
+ *   "Data": 0,
+ *   "Status": "InvalidArgument",
+ *   "Messages": [ "Invalid argument" ]
+ * }
+ */
+```
+
 ## Validating
 
-Static validation
+A simple implementation of validation. You can validate static values or validate the `Data` model.
+
+_Simple direct validation_
 
 ```csharp
 int userId = -1;
@@ -131,11 +160,20 @@ Result<bool> validateResult =
         .Validate(userId > 0, ResultComplete.InvalidArgument, "User identifier must be positive number")
         .Validate(userName.Length > 0, ResultComplete.InvalidArgument, "User name is required");
 
-// validateResult:
-//  Data = false
-//  Status = InvalidArgument
-//  Messages = string[] { "User identifier must be positive number", "User name is required" }
+/* {
+ *   "Data": false,
+ *   "Status": "InvalidArgument",
+ *   "Messages": [
+ *     "User identifier must be positive number",
+ *     "User name is required"
+ *   ]
+ * }
+ */
+```
 
+_Simple validation of the `.Data` model_
+
+```csharp
 string userName = "someLongUserName";
 Result<bool> validateResult =
     Result
@@ -145,23 +183,33 @@ Result<bool> validateResult =
             ResultComplete.InvalidArgument,
             x => $"User name must be less than 5 symbols, the provided value was {x.Length} symbols.")
 
-// validateResult:
-//  Data = "someLongUserName"
-//  Status = InvalidArgument
-//  Messages = string[] { "User name must be less than 5 symbols, the provided value was 12 symbols." }
+/* {
+ *   "Data": "someLongUserName",
+ *   "Status": "InvalidArgument",
+ *   "Messages": [ "User name must be less than 5 symbols, the provided value was 12 symbols." ]
+ * }
+ */
 ```
 
-Validate can skip rules on fail
+_Validate can be skipped based on the result's `Status` property and the `skipOnInvalidResult` argument_
 
 ```
+UserModel userModel = null;
 Result<bool> validateResult =
     Result
         .Create(userModel)
         .Validate(user => user != null, ResultComplete.InvalidArgument, "User model is null")
         .Validate(user => user.UserId > 0, ResultComplete.InvalidArgument, "User identifier is required", skipOnInvalidResult: true);
+
+/* {
+ *   "Data": false,
+ *   "Status": "InvalidArgument",
+ *   "Messages": [ "User model is null" ]
+ * }
+ */
 ```
 
-Validate nullable
+_Validate nullable objects with the `ValidateNotNull` method_
 
 ```
 Result<bool> validateResult =
@@ -171,7 +219,7 @@ Result<bool> validateResult =
         .Validate(name => /** name is not null */, ResultComplete.InvalidArgument, "");
 ```
 
-Chain validation and mapping
+_Chain validation and mapping_
 
 ```csharp
 Task<Result<User>> UpdateUserAsync(int userId, string userName)
@@ -190,7 +238,7 @@ Task<Result<User>> UpdateUserAsync(int userId, string userName)
         .ValidateAsync(
             user => user != null,
             ResultComplete.NotFound,
-            "User doesn't exists")
+            "User doesn't exist")
         .MapAsync(
             async user =>
             {
@@ -207,19 +255,48 @@ Task<Result<User>> UpdateUserAsync(int userId, string userName)
 }
 
 await UpdateUserAsync(10, "");
-// Status=InvalidArgument, Messages=["User name is required"], Data=null
+
+/* {
+ *   "Data": null,
+ *   "Status": "InvalidArgument",
+ *   "Messages": [ "User name is required" ]
+ * }
+ */
 
 await UpdateUserAsync(100, "Rosen");
-// One of the following:
-//
-// Status=NotFound, Messages=["User doesn't exists"], Data=null
-// Status=OperationFailed, Messages=["User was not updated"], Data=null
-// Status=Success, Messages=null, Data={ UserId=100, UserName="Rosen" }
+
+/* 
+ * In case `_userRepository.GetByIdAsync()` returns `null`:
+ * {
+ *   "Data": null,
+ *   "Status": "NotFound",
+ *   "Messages": [ "User doesn't exist" ]
+ * }
+ *
+ * In case `_userRepository.UpdateUserAsync()` returns `null`:
+ * {
+ *   "Data": null,
+ *   "Status": "OperationFailed",
+ *   "Messages": [ "User was not updated" ]
+ * }
+ *
+ * In case everything is successful:
+ * {
+ *   "Data": {
+ *     "UserId": 100,
+ *     "UserName": "Rosen"
+ *   },
+ *   "Status": "Success",
+ *   "Messages": null
+ * }
+ */
 ```
 
 ## Switch Mapping
 
-You may need to use multiple method returning Result. For that reason there is Switch method.
+You may need to use multiple methods to return `Result`. For that reason, there is the `Switch` method.
+
+_The `Switch` method uses another Result as a source of mapping_
 
 ```csharp
 Result<int> Multiply(int a, int b) =>
@@ -231,25 +308,54 @@ Result<int> AddAndDouble(int a, int b) =>
         .Switch(value => Multiply(value, 2))
         .Map(value => $"The result is {value}");
 
-AddAndDouble(2, 3) // Data = "The result is 10"
+AddAndDouble(2, 3)
+
+/* {
+ *   "Data": "The result is 10",
+ *   "Status": "Success",
+ *   "Messages": null
+ * }
+ */
+```
+
+_The `SwitchAsync` is the same as `Switch` but uses `Task`_
+
+```csharp
+Result<int> validateResult =
+    await Result
+        .Create(5)
+        .SwitchAsync(value =>
+            Task.FromResult(
+                Result.Create(value * 2)));
+
+/* {
+ *   "Data": 10,
+ *   "Status": "Success",
+ *   "Messages": null
+ * }
+ */
 ```
 
 ## Ensure successful result and return data
 
-```csharp
-// return user or throw exception
-User validatedUser =
-    Result
-        .Create(user)
-		.ValidateNotNull(ResultComplete.InvalidArgument, string.Empty)
-		.AsValidData();
+The method `AsValidData` returns the `Data` property or throws the [ResultValidationException](src/FluentResult/ResultValidationException.cs) when invalid.
 
-// When invalid we throw [ResultValidationException](src/FluentResult/ResultValidationException.cs).
+_Throws the `ResultValidationException` exception_
+
+```csharp
 Result
   .Validate(false, ResultComplete.OperationFailed, "Invalid result")
   .AsValidData();
+```
+
+_Returns the Data model_
+
+```csharp
+User theSameAsUser =
+    Result.Create(user).AsValidData();
 
 // We can also use `AsValidDataAsync` for `Task<Result<TSource>>` and `Task<ResultOfItems<TSource>>`.
+
 Result.Create(5)
   .MapAsync(Task.FromResult)
   .AsValidDataAsync();
@@ -257,7 +363,7 @@ Result.Create(5)
 
 ## Catch Exception
 
-We can catch async exception by using the Catch extensions.
+We can catch async exceptions by using the Catch extensions.
 
 ```csharp
 Result<User> result =
@@ -269,7 +375,7 @@ Result<User> result =
 
 ## ResultOfItems
 
-The result of items is a result that contain metadata for a collection of items.
+The result of items is a result that contains metadata for a collection of items.
 
 ```csharp
 ResultOfItems<int> result = new ResultOfItems<int>(
