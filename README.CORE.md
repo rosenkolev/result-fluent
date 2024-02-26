@@ -1,6 +1,19 @@
 
 # FluentResult
 
+1. [Models](#models)
+1. [Creating a Result](#creating-a-result)
+1. [Map and MapAsync](#map-and-mapasync)
+1. [Validating](#validating)
+1. [Switch Mapping](#switch-mapping)
+1. [Ensure successful result](#ensure-successful-result)
+1. [Catch Exception](#catch-exception)
+1. [ResultOfItems](#resultofitems)
+1. [Combine and CombineAsync](#combine-and-combineasync)
+1. [Async helper class](#async-helper-class)
+1. [Using FluentValidation](#using-fluentvalidation)
+1. [Deserialize the Result](#deserialize-the-result)
+
 ## Models
 
 ```csharp
@@ -336,7 +349,7 @@ Result<int> validateResult =
  */
 ```
 
-## Ensure successful result and return data
+## Ensure successful result
 
 The method `AsValidData` returns the `Data` property or throws the [ResultValidationException](src/FluentResult/ResultValidationException.cs) when invalid.
 
@@ -462,11 +475,66 @@ We can use `.AsAsync()` extension method.
 Async task = Result.Create(5).MapAsync(Task.FromResult).ToAsync();
 ```
 
-## Deserialize the as Result<TResult>
+## Using FluentValidation
 
-In order to deserialize it we need to add `JsonConstructorAttribute`, because all properties are with private set.
+We can extend the `Result` class to support `FluentValidation` as well.
+
+```csharp
+using FluentResult;
+using FluentValidation;
+
+public static class FluentValidationExtensions
+{
+  /// <summary>Validates based on FluentValidation.</summary>
+  /// <typeparam name="TResult">The type of the result.</typeparam>
+  [DebuggerStepThrough]
+  public static Result<TResult> Validate<TResult>(
+    [NotNull] this Result<TResult> result,
+    [NotNull] IValidator<TResult> validator,
+    ResultComplete status)
+  {
+    var res = validator.Validate(result.Data);
+    return res.IsValid
+      ? result
+      : new Result<TResult>(
+          result.Data,
+          status,
+          (result.Messages ?? []).Concat(res.Errors.Select(it => it.ErrorMessage)).ToArray());
+  }
+
+  /// <summary>Validates based on FluentValidation.</summary>
+  /// <typeparam name="TResult">The type of the result.</typeparam>
+  [DebuggerStepThrough]
+  public static Result<TResult> Validate<TResult>(
+    [NotNull] this Result<TResult> result,
+    [NotNull] IValidator<TResult> validator,
+    ResultComplete status,
+    bool skipOnInvalidResult) =>
+    skipOnInvalidResult && !result.IsSuccessfulStatus()
+      ? result
+      : Validate(result, validator, status);
+}
+```
+
+Then use it in the flow:
+
+```csharp
+/*
+ * class UpdateUserValidator : AbstractValidator<UserModel> { }
+ */
+
+/// <inheritdoc/>
+public Task<Result<UserModel>> UpdateAsync(UserModel updateModel) =>
+  Result
+    .Create(updateModel)
+    .Validate(new UpdateUserValidator(), ResultComplete.InvalidArgument);
+```
+
+## Deserialize the Result
+
+To deserialize it we need to add `JsonConstructorAttribute`, because all properties are with a private set.
 For this to happen we need to use System.Test.Json or Newtonsoft.Json.
-This library do not include it, because we do not want to depend on specific serialization. It can be achieved by inhering the class like:
+This library does not include it, because we do not want to depend on specific serialization. It can be achieved by inhering the class like:
 
 ```csharp
 // my /Result{TResult}.cs
